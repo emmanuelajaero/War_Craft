@@ -1,8 +1,10 @@
 
-import pygame
-from pygame import mixer   #used for playing audio in pygame
-import random
 import math
+import random
+
+import pygame
+from pygame import mixer  # used for playing audio in pygame
+
 #Global variables
 WIDTH = 800         #the width of the game screen
 HEIGHT = 600        #the height of the game screen
