@@ -42,20 +42,20 @@ clock = pygame.time.Clock()
 pygame.display.set_caption("War Craft")
 
 #Create Icon for the game
-icon = pygame.image.load("player.png")
+icon = pygame.image.load("assets/images/player.png")
 # icon.set_colorkey(WHITE)
 pygame.display.set_icon(icon)
 
 
 #background music
-mixer.music.load("background_music.mp3") #load the music file
+mixer.music.load("assets/audio/background_music.mp3") #load the music file
 mixer.music.play(-1)    #play the music in loop
 
 #load image that will be used for backgroud
-backgroud_image = pygame.image.load("space.jpg").convert()  #load backgroud image
-full_life = pygame.image.load("full_life.png").convert()    #Load life indicator
+backgroud_image = pygame.image.load("assets/images/space.jpg").convert()  #load backgroud image
+full_life = pygame.image.load("assets/images/full_life.png").convert()    #Load life indicator
 full_life.set_colorkey(WHITE)                               #remove whilte backgroud from the image
-half_life = pygame.image.load("half_life.png").convert()    #load image for half_life
+half_life = pygame.image.load("assets/images/half_life.png").convert()    #load image for half_life
 half_life.set_colorkey(WHITE)                               #remove white backgroud from the image
 
 
@@ -133,7 +133,7 @@ def backgroud():
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)     #initialize the sprite inherited class
-        self.image = pygame.image.load("player.png").convert()      #load the player image and convert to a more portable version
+        self.image = pygame.image.load("assets/images/player.png").convert()      #load the player image and convert to a more portable version
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
         self.rect.centerx = WIDTH//2         #play the player in the middle of the x axis
@@ -159,7 +159,7 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("enemy.png").convert()      #load the player image and convert to a more portable version
+        self.image = pygame.image.load("assets/images/enemy.png").convert()      #load the player image and convert to a more portable version
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
         self.rect.centerx = random.randint(0,WIDTH)         #play the player randomly on the x axis
@@ -200,7 +200,7 @@ class Enemy(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)     #initialize the sprite inherited class
-        self.image = pygame.image.load("bullet.png").convert()      #load the player image and convert to a more portable version
+        self.image = pygame.image.load("assets/images/bullet.png").convert()      #load the player image and convert to a more portable version
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
         self.rect.centerx = x         #play the player in the middle of the x axis
@@ -218,7 +218,7 @@ class Explosion(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-        self.image_ori = pygame.image.load("explosion-32.png").convert()
+        self.image_ori = pygame.image.load("assets/images/explosion-32.png").convert()
         self.image_ori.set_colorkey(WHITE)
         self.image = self.image_ori.copy()
         self.rect = self.image.get_rect()   #get the rectangle enclosing the explosion object
@@ -269,7 +269,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             #if the key pressed is space
             if event.key == pygame.K_SPACE:
-                gun_shot = mixer.Sound("shoot.wav")     #load shooting sound
+                gun_shot = mixer.Sound("assets/audio/shoot.wav")     #load shooting sound
                 gun_shot.play()                         #emit shooting sound
                 player.shoot()                          #place a bullet at the player's possition
             #if the key pressed is p to pause
@@ -300,7 +300,7 @@ while running:
     #check for the specific enemy hit
     for hit in bullet_hit:
         # print("hit group : ", dir(hit.groups), "\n hit rect", dir(hit.rect))
-        explosion_sound = mixer.Sound("explosion.wav")  #load explosion sound
+        explosion_sound = mixer.Sound("assets/audio/explosion.wav")  #load explosion sound
         explosion_sound.play()                          #emit explosion sound
         explosion_x = hit.rect.x + 32                   #calculate the x coordinate of the explosion image relative to the postion of the enemy
         explosion_y = hit.rect.y + 32                   #calculate the y coordinate of the explosion image relative to the postion of the enemy
@@ -319,7 +319,7 @@ while running:
     #check if there is a hit
     if len(player_hit) > 0: #check for the specific enemy collided with
         for enemy_sprite in player_hit:
-            explosion_sound = mixer.Sound("explosion.wav")  #load explosion sound
+            explosion_sound = mixer.Sound("assets/audio/explosion.wav")  #load explosion sound
             explosion_sound.play()                          #emit explosion sound
             #calculate x and y coordinate for explosion
             explosion_x = min(enemy_sprite.rect.centerx, player.rect.centerx) + math.sqrt(math.pow((enemy_sprite.rect.centerx-player.rect.centerx), 2))//2
