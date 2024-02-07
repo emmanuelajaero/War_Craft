@@ -5,28 +5,11 @@ import random
 import pygame
 from pygame import mixer  # used for playing audio in pygame
 
-#Global variables
-WIDTH = 800         #the width of the game screen
-HEIGHT = 600        #the height of the game screen
-frame_rate = 30     #initialize how many frames per second
-enemy_speed_y = 2 #2     #this is the number that determine how fast the enemy will approach the player
-enemy_speed_x = 2 #2       #the speed the enemy moves with in the x axis
-bullet_speed = 10       #the speed of travel of the bullet
-increment_enemy = 1     #how many enemies will be added to the screen
-
-highesrt_score = 0       #variable updated from static file at the start of the game and updated at the end of the game with the highest score so far
-current_level = 1       #the current level of the game
-current_score = 0       #the current accumulated score
-stage_change_score = 10 #at what score will the game stage change
-remaining_life = 6      #the number of life left for the player
-
-WHITE = (255, 255, 255) #define white color
-BLACK = (0, 0, 0)       #define black color
-RED = (255, 0, 0)       #Define red color
-YELLOW = (255, 255, 0)  #Define yellow color
-
-
-
+from src.bullet import Bullet
+from src.constants import *
+from src.enemy import Enemy
+from src.explosion import Explosion
+from src.player import Player
 
 #initialization
 pygame.init()
@@ -129,136 +112,19 @@ def backgroud():
     write_screen("High Score: {}".format(str(highest_score)), WHITE, (550,0), 24)   #write the highest score on the screen
 
 
-#defining the player object (sprite)
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)     #initialize the sprite inherited class
-        self.image = pygame.image.load("assets/images/player.png").convert()      #load the player image and convert to a more portable version
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
-        self.rect.centerx = WIDTH//2         #play the player in the middle of the x axis
-        self.rect.bottom = HEIGHT-10        #let the bottom of the player be just above the bottom of the screen
-        self.speedx = 0                     #initial speed of the player on the x axis is 0
-    def update(self):
-        self.speedx = 0         #player initial speed on the x axis
-        keys = pygame.key.get_pressed() #get the array of key press event
-        if keys[pygame.K_LEFT]:
-            self.speedx = -8            #if left arrow key is pressed move the player 8 pixels left
-        if keys[pygame.K_RIGHT]:
-            self.speedx = 8             #if right arrow key is pressed move player 8 pixel right
-        self.rect.x += self.speedx      #update the player position
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH     #set the right boundary for the player object
-        if self.rect.left < 0:
-            self.rect.left = 0          #set the left boundary for the player object(sprite)
-    def shoot(self):
-        bullet = Bullet(self.rect.centerx, self.rect.top)
-        sprites.add(bullet)
-        bullets.add(bullet)
-#define the enemy object
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("assets/images/enemy.png").convert()      #load the player image and convert to a more portable version
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
-        self.rect.centerx = random.randint(0,WIDTH)         #play the player randomly on the x axis
-        self.rect.top = 32        #let the bottom of the player be just above the bottom of the screen
-        # self.speedx = enemy_speed_x                     #initial speed of the player on the x axis is 0
-        direction = [1, -1]                               #make sure the direction of the enemy when appear on screen is randomly right or left
-        self.speedx = direction[random.randint(0,1)]*enemy_speed_x  #random direction
-        self.speedy = enemy_speed_y
-
-    #the function excuted for enemy at every update cycle
-    def update(self):
-        self.rect.x += self.speedx  #increment the x coordinate of the enemy by the values of speedx
-        self.rect.y += self.speedy  #increment the y coordinate of the enemy by the values of speedy
-        if self.rect.right > WIDTH: #if the enemy leaves the border return it within the border by the right and reverse the direction
-            self.rect.right = WIDTH
-            self.speedx = -enemy_speed_x
-        elif self.rect.left < 0:    #if the enemy leaves the border return it within the border by the left and reverse the direction
-            self.rect.left = 0
-            self.speedx = enemy_speed_x
-
-        # if self.rect.top > HEIGHT+10 or self.rect.left < -25 or self.rect.right > WIDTH+20:
-        #     self.rect.x = random.randrange(WIDTH-self.rect.width)
-        #     self.rect.y = random.randrange(-100, -40)
-        #     self.speedy = random.randrange(1, 10)
-
-
-        # self.rect.x += self.speedx
-        #at this dept remove the enemy from screen and replace it with a new one
-        if self.rect.y >= HEIGHT-10:
-            self.kill()
-            for i in range(1):
-                enemy = Enemy()
-                sprites.add(enemy)
-                enemies.add(enemy)
-
-
-#defining the bullet object (sprite)
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        pygame.sprite.Sprite.__init__(self)     #initialize the sprite inherited class
-        self.image = pygame.image.load("assets/images/bullet.png").convert()      #load the player image and convert to a more portable version
-        self.image.set_colorkey(WHITE)
-        self.rect = self.image.get_rect()   #get the rectangle enclosing the player object
-        self.rect.centerx = x         #play the player in the middle of the x axis
-        self.rect.bottom = y        #let the bottom of the player be just above the bottom of the screen
-        self.speedy = -bullet_speed                     #initial speed of the player on the x axis is 0
-    def update(self):
-        self.rect.y += self.speedy         #bullet transition y axis
-        #remove the bullet once the bullet leaves the screen
-        if self.rect.bottom < 0:
-            self.kill()
-
-#define explosion sprite
-class Explosion(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.x = x
-        self.y = y
-        self.image_ori = pygame.image.load("assets/images/explosion-32.png").convert()
-        self.image_ori.set_colorkey(WHITE)
-        self.image = self.image_ori.copy()
-        self.rect = self.image.get_rect()   #get the rectangle enclosing the explosion object
-        self.rect.centerx = self.x
-        self.rect.centery = self.y
-        self.last_time = pygame.time.get_ticks()    #store the time the explosion appears on the screen
-    def update(self):
-        now = pygame.time.get_ticks()               #get the current ticks after explosion
-        if now - self.last_time > 200:              #remove eplosion from screen after 200 ticks
-            self.kill()
-
-
-
 player = Player()       #initialize the player object(sprite)
 sprites.add(player)     #include the player sprite in the group of sprites
-enemy = Enemy()         #initialize the first enemy sprite
+enemy = Enemy(sprites, enemies)         #initialize the first enemy sprite
 sprites.add(enemy)      #add the enemy sprite to the sprite group used to update the screen
 enemies.add(enemy)      #add the enemy sprite to the sprite group used keeping track of enemies
 
-# def restart_game():
-#     enemy_speed_x = 2
-#     enemy_speed_y = 2
-#     current_level = 1
-#     current_score = 0
-#     remaining_life = 6
-#     sprites.empty()
-#     enemies.empty()
-#     bullets.empty()
-#     player = Player()       #initialize the player object(sprite)
-#     sprites.add(player)     #include the player sprite in the group of sprites
-#     enemy = Enemy()
-#     sprites.add(enemy)
-#     enemies.add(enemy)
 
 
 #Game Loop
 running = True      #variable used to keep the game loop running or stop
 # game_static_init()  #initialize from the static file
 while running:
-    clock.tick(frame_rate)  #set the frame rate of the game
+    clock.tick(FRAME_RATE)  #set the frame rate of the game
 
     #track events
     for event in pygame.event.get():
@@ -271,7 +137,7 @@ while running:
             if event.key == pygame.K_SPACE:
                 gun_shot = mixer.Sound("assets/audio/shoot.wav")     #load shooting sound
                 gun_shot.play()                         #emit shooting sound
-                player.shoot()                          #place a bullet at the player's possition
+                player.shoot(sprites, bullets)                          #place a bullet at the player's possition
             #if the key pressed is p to pause
             if event.key == pygame.K_p:
                 write_screen("PAUSE", WHITE, (300, 200), 64)    #write pause on screen
@@ -309,7 +175,7 @@ while running:
         current_score += 1                              #increment score
         #increment the number of enemies based on the increment_enemy value
         for i in range(increment_enemy):
-            enemy = Enemy()
+            enemy = Enemy(sprites, enemies)
             sprites.add(enemy)
             enemies.add(enemy)
 
@@ -328,7 +194,7 @@ while running:
             sprites.add(explosion)                          #add the explosion to group for update
             remaining_life -= 1                             #decrement the playing life
             enemy_sprite.kill()                             #remove the enemy involved in the collision
-            enemy = Enemy() #create a new enemy
+            enemy = Enemy(sprites, enemies) #create a new enemy
             sprites.add(enemy)  #add the enemy to the sprite group for update
             enemies.add(enemy)  #add the enemy to the sprite group for that keeps track of the enemies sprite
             # explosions.add(explosion)
@@ -409,7 +275,7 @@ while running:
                         bullets.empty()     #remove all the bullets sprites
                         player = Player()       #initialize the player object(sprite)
                         sprites.add(player)     #include the player sprite in the group of sprites
-                        enemy = Enemy()     #create on new enemy
+                        enemy = Enemy(sprites, enemies)     #create on new enemy
                         sprites.add(enemy)  #set the enemy for screen update
                         enemies.add(enemy)  #add the enemy to the group that keeps track of the enemies
                         break
