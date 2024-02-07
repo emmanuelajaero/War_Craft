@@ -8,7 +8,7 @@ with every 10 increase in score except from 0-20
 
 
 The art work used in this game images and sounds where downloaded from one of these websites:
-https://www.freepik.com/, https://www.dafont.com/, https://opengameart.org/, freesoundeffects.com/free-sounds/gun-10081/
+https://www.freepik.com/, https://www.dafont.com/, https://opengameart.org/, https://www.freesoundeffects.com/free-sounds/gun-10081/
 
 The game consists basically of 4 different sprites objects and 3 different sprites groups
 The “Player” sprite object if the object that will be controlled by the player of the game,
