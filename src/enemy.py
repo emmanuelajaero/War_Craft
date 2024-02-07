@@ -1,4 +1,3 @@
-# enemy.py
 
 import random
 

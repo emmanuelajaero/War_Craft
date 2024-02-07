@@ -1,4 +1,3 @@
-# explosion.py
 
 import pygame
 from .constants import *

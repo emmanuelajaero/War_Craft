@@ -1,4 +1,3 @@
-# player.py
 
 import pygame
 
